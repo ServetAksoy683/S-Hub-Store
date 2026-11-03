@@ -91,7 +91,7 @@ nav button.on::before{content:"";position:absolute;top:0;width:28px;height:3px;b
 .steps{display:flex;gap:8px;margin:14px 0}
 .steps i{flex:1;height:6px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden;position:relative}
 .steps i.on::after{content:"";position:absolute;inset:0;background:var(--gold)}
-#ad{position:fixed;inset:0;z-index:90;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+#ad{position:fixed;inset:0;z-index:200;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
 #ad.on{display:flex}
 #ad .badge{position:absolute;top:max(16px,env(safe-area-inset-top));left:16px;font-size:12px;color:#ccc;border:1px solid #555;border-radius:6px;padding:3px 8px}
 #ad .cd{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;font-weight:700;background:rgba(255,255,255,.14);border-radius:999px;padding:6px 14px;min-width:44px}
@@ -274,6 +274,7 @@ nav button.on::before{content:"";position:absolute;top:0;width:28px;height:3px;b
 <div id="lb"><div id="lbCount"></div><div class="stage" id="lbStage"></div><button id="lbPrev">‹</button><button id="lbNext">›</button><button id="lbClose">✕</button></div>
 <div class="toast" id="toast"></div>
 
+<script src="cordova.js"></script>
 <script>
 (function(){
 "use strict";
@@ -1008,7 +1009,7 @@ function openDetail(a){
 }
 /* ================= BASLANGIC ================= */
 setMode("in");trStatic();probeCatalog().then(function(){if($("main").classList.contains("on")&&$("p-home").classList.contains("on"))renderHome()});
-runSplash(function(){ Ads.appOpen().then(function(){ session()?enter():show("auth") }) });
+runSplash(function(){ $("splash").classList.remove("on"); Ads.appOpen().then(function(){ session()?enter():show("auth") }) });
 })();
 </script>
 </body>

@@ -4,7 +4,7 @@ Bu klasör hazır bir Cordova projesidir. Sıra: (1) APK'yı derle, (2) Firebase
 
 ## 0) Klasörde ne var
 - `www/index.html` → tüm uygulama (tek dosya)
-- `plugins/shub-native/` → izin sayfası, indirme çubuğu, gizli klasör ve kurulum için Android eklentisi
+- `local_plugins/shub-native/` → izin sayfası, indirme çubuğu, gizli klasör ve kurulum için Android eklentisi
 - `.github/workflows/build.yml` → APK'yı bulutta derler (bilgisayar gerekmez)
 - `config.xml` → uygulama adı / paket adı (`com.shub.store`)
 
