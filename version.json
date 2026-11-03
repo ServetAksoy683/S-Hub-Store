@@ -1,0 +1,9 @@
+{
+  "versionCode": 4,
+  "versionName": "1.2",
+  "minVersionCode": 0,
+  "notes": "Ana sayfada büyük, kendiliğinden kayan öne çıkan sekme.",
+  "notes_en": "Large auto-sliding featured tab on the home page.",
+  "notes_ru": "Большая автопрокручиваемая вкладка на главной.",
+  "apk": "https://github.com/KULLANICI/DEPO/releases/latest/download/shub-store.apk"
+}

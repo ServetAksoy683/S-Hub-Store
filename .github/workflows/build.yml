@@ -1,0 +1,47 @@
+name: APK derle
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: android-actions/setup-android@v3
+      - name: Surumu version.json'dan oku
+        run: |
+          CODE=$(jq -r .versionCode version.json)
+          NAME=$(jq -r .versionName version.json)
+          sed -i "s|<widget id=\"com.shub.store\" version=\"[^\"]*\"|<widget id=\"com.shub.store\" version=\"$NAME\" android-versionCode=\"$CODE\"|" config.xml
+          echo "CODE=$CODE" >> $GITHUB_ENV
+      - name: Imza dosyasini hazirla
+        run: echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > $RUNNER_TEMP/shub.jks
+      - name: Cordova kur
+        run: npm install -g cordova@12
+      - name: Platform ve eklentiler
+        run: |
+          cordova platform add android@13
+          cordova plugin add cordova-plugin-inappbrowser
+          cordova plugin add ./plugins/shub-native
+      - name: Derle (release, sabit imza)
+        run: |
+          cordova build android --release -- --keystore=$RUNNER_TEMP/shub.jks --storePassword="${{ secrets.KEYSTORE_PASSWORD }}" --alias=shub --password="${{ secrets.KEYSTORE_PASSWORD }}" --packageType=apk
+          cp platforms/android/app/build/outputs/apk/release/*.apk shub-store.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shub-store-apk
+          path: shub-store.apk
+      - name: Yayinla (sabit indirme adresi)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.CODE }}
+          name: S-Hub Store v${{ env.CODE }}
+          files: shub-store.apk
+          make_latest: true
