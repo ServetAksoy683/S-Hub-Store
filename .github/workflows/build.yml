@@ -33,7 +33,7 @@ jobs:
         run: |
           cordova platform add android@13
           cordova plugin add cordova-plugin-inappbrowser
-          cordova plugin add ./plugins/shub-native
+          cordova plugin add ./local_plugins/shub-native
       - name: Derle (release, sabit imza)
         run: |
           cordova build android --release -- --keystore=$RUNNER_TEMP/shub.jks --storePassword="${{ secrets.KEYSTORE_PASSWORD }}" --alias=shub --password="${{ secrets.KEYSTORE_PASSWORD }}" --packageType=apk
