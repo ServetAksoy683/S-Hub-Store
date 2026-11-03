@@ -1,0 +1,11 @@
+{
+  "name": "shub-native",
+  "version": "1.0.0",
+  "description": "S-Hub Store native bridge",
+  "cordova": {
+    "id": "shub-native",
+    "platforms": ["android"]
+  },
+  "keywords": ["ecosystem:cordova", "cordova-android"],
+  "license": "MIT"
+}

@@ -18,7 +18,7 @@ jobs:
         run: |
           SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           yes | "$SDKM" --licenses > /dev/null || true
-          "$SDKM" "platforms;android-35" "build-tools;35.0.0" > /dev/null || true
+          "$SDKM" "platforms;android-34" "build-tools;34.0.0" "platforms;android-35" "build-tools;35.0.0" > /dev/null || true
       - name: Surumu version.json'dan oku
         run: |
           CODE=$(jq -r .versionCode version.json)
