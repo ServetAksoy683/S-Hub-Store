@@ -127,9 +127,11 @@ public class ShubNative extends CordovaPlugin {
             case "download": {
                 final String url = args.getString(0);
                 final String name = args.getString(1);
-                cordova.getThreadPool().execute(new Runnable() {
-                    @Override public void run() { download(url, name, cb); }
-                });
+                ShubDownloadService.cb = cb;
+                Intent si = new Intent(ctx(), ShubDownloadService.class)
+                        .putExtra("url", url).putExtra("name", name);
+                if (Build.VERSION.SDK_INT >= 26) ctx().startForegroundService(si);
+                else ctx().startService(si);
                 return true;
             }
             case "install": {

@@ -11,8 +11,11 @@
             <uses-permission android:name="android.permission.INTERNET" />
             <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
             <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+            <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+            <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
         </config-file>
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <service android:name="com.shub.ShubDownloadService" android:exported="false" android:foregroundServiceType="dataSync" />
             <provider android:name="com.shub.ShubFileProvider" android:authorities="$PACKAGE_NAME.shubprovider" android:exported="false" android:grantUriPermissions="true">
                 <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/shub_paths" />
             </provider>
@@ -20,6 +23,7 @@
         <resource-file src="res/xml/shub_paths.xml" target="res/xml/shub_paths.xml" />
         <source-file src="src/android/ShubNative.java" target-dir="src/com/shub" />
         <source-file src="src/android/ShubFileProvider.java" target-dir="src/com/shub" />
+        <source-file src="src/android/ShubDownloadService.java" target-dir="src/com/shub" />
         <framework src="androidx.core:core:1.12.0" />
         <framework src="com.unity3d.ads:unity-ads:4.12.5" />
     </platform>

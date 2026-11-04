@@ -305,6 +305,8 @@ var AVCOLORS=[["#e0b04a","#b8862b"],["#2b6fff","#18b7ff"],["#1fa35a","#8be04a"],
 
 
 var DICT={
+"E-postanı doğrulamalısın. Gelen kutuna (ve spam klasörüne) yeni bir doğrulama bağlantısı gönderdik; tıkladıktan sonra tekrar giriş yap.":["You need to verify your email. We sent a new verification link to your inbox (check spam too); click it, then sign in again.","Нужно подтвердить почту. Мы отправили новую ссылку (проверьте и спам); перейдите по ней и войдите снова."],
+"Kayıt tamamlandı! E-postana bir doğrulama bağlantısı gönderdik (spam klasörüne de bak). Bağlantıya tıkladıktan sonra giriş yapabilirsin.":["Sign-up complete! We sent a verification link to your email (check spam too). Click it, then you can sign in.","Регистрация завершена! Мы отправили ссылку для подтверждения на вашу почту (проверьте и спам). После перехода по ней можно войти."],
 "Abone ol":["Subscribe","Подписаться"],
 "S-Hub Mod":["S-Hub Mod","S-Hub Мод"],
 "İndirmek için giriş yapmalısın.":["Please sign in to download.","Войдите, чтобы скачать."],
@@ -472,7 +474,7 @@ function runSplash(done){
 /* ================= AYARLAR (kurulum rehberine bak) ================= */
 var CONFIG={
   // Firebase kurulunca doldur: {apiKey:"...",authDomain:"...",projectId:"...",appId:"..."}
-  firebase:null,
+  firebase:{apiKey:"AIzaSyDRHcaq7mPwYWKCVcT_PBR7Ci52vtS7pOA",authDomain:"fir-hub-511f9.firebaseapp.com",projectId:"fir-hub-511f9",storageBucket:"fir-hub-511f9.firebasestorage.app",messagingSenderId:"627991689308",appId:"1:627991689308:web:5c6fd1162d46dc5df2ce99"},
   update:{url:""}, // ornek: "https://raw.githubusercontent.com/KULLANICI/DEPO/main/version.json"
   unity:{gameId:"800423160",placement:"BP_Rewarded_Android",interstitial:"BP_Interstitial_Android",testMode:true}, // Unity panelinden Game ID yaz; bos ise deneme ekrani gosterilir
   admob:{
@@ -533,7 +535,9 @@ var Backend=(function(){
             tx.set(nref,{uid:uid});
             tx.set(db.collection("users").doc(uid),{name:name,nameLower:low,nameChangedAt:new Date(0),premium:false,created:fb.firestore.FieldValue.serverTimestamp()});
           });
-        }).then(function(){return{mail:mail,name:name,uid:uid,guest:false,premium:false}},
+        }).then(function(){
+          return Promise.resolve(c.user.sendEmailVerification()).catch(function(){}).then(function(){return fb.auth().signOut()}).catch(function(){}).then(function(){return{verify:true,mail:mail}});
+        },
           function(e){return c.user.delete().catch(function(){}).then(function(){throw (e&&e.code==="name_taken"?e:(e&&e.code==="permission-denied"?E("name_taken"):mapAuth(e)))})});
       },function(e){throw mapAuth(e)});
     });
@@ -548,6 +552,9 @@ var Backend=(function(){
     }
     return init().then(function(){
       return fb.auth().signInWithEmailAndPassword(mail,pw).then(function(c){
+        if(!c.user.emailVerified){
+          return Promise.resolve(c.user.sendEmailVerification()).catch(function(){}).then(function(){return fb.auth().signOut()}).catch(function(){}).then(function(){throw E("unverified")});
+        }
         return fb.firestore().collection("users").doc(c.user.uid).get().then(function(d){
           var x=d.exists?d.data():{name:mail.split("@")[0],premium:false};
           return{mail:mail,name:x.name,uid:c.user.uid,guest:false,premium:!!x.premium};
@@ -586,7 +593,7 @@ var Backend=(function(){
   function logout(){if(online()&&fb)fb.auth().signOut().catch(function(){})}
   return{init:init,register:register,login:login,changeName:changeName,lastChange:lastChange,logout:logout,online:online};
 })();
-var ERRS={mail_taken:"Bu e-posta zaten kayıtlı.",name_taken:"Bu kullanıcı adı başkası tarafından kullanılıyor.",bad_login:"E-posta veya şifre hatalı.",network:"Bağlantı hatası. İnternetini kontrol et.",name_locked:"Kullanıcı adını 7 günde bir değiştirebilirsin."};
+var ERRS={unverified:"E-postanı doğrulamalısın. Gelen kutuna (ve spam klasörüne) yeni bir doğrulama bağlantısı gönderdik; tıkladıktan sonra tekrar giriş yap.",mail_taken:"Bu e-posta zaten kayıtlı.",name_taken:"Bu kullanıcı adı başkası tarafından kullanılıyor.",bad_login:"E-posta veya şifre hatalı.",network:"Bağlantı hatası. İnternetini kontrol et.",name_locked:"Kullanıcı adını 7 günde bir değiştirebilirsin."};
 function errText(e){return T(ERRS[e&&e.code]||"Bir hata oluştu.")}
 
 var mode="in";
@@ -602,7 +609,9 @@ $("auGo").onclick=function(){
   if(mode==="up"&&!validName(nm))return fail(T("Kullanıcı adı 3-20 karakter olmalı (harf, rakam, . _ -)."));
   busy=true;$("auGo").disabled=true;fail("");
   (mode==="up"?Backend.register(mail,pw,nm):Backend.login(mail,pw)).then(function(s){
-    busy=false;$("auGo").disabled=false;setSession(s);enter();
+    busy=false;$("auGo").disabled=false;
+    if(s&&s.verify){setMode("in");fail(T("Kayıt tamamlandı! E-postana bir doğrulama bağlantısı gönderdik (spam klasörüne de bak). Bağlantıya tıkladıktan sonra giriş yapabilirsin."));return}
+    setSession(s);enter();
   },function(e){busy=false;$("auGo").disabled=false;fail(errText(e))});
 };
 $("auGuest").onclick=function(){setSession({mail:"",name:"Misafir",guest:true,premium:false});enter()};
